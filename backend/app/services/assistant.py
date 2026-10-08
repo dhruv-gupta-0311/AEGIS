@@ -1,4 +1,4 @@
-"""
+﻿"""
 AEGIS AI Security Assistant service.
 
 Responsibilities:
@@ -12,7 +12,7 @@ Security constraints:
   by user input.
 - Scan context carries safe metadata only (no raw passwords, no email bodies).
 - Gemini output is treated as untrusted generated content and sanitised.
-- The assistant is advisory/educational only — it cannot execute actions.
+- The assistant is advisory/educational only â€” it cannot execute actions.
 """
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ _MAX_FOLLOWUP_LEN = 100     # characters per follow-up suggestion
 _NUM_FOLLOWUPS = 3          # number of follow-up suggestions to generate
 
 # ---------------------------------------------------------------------------
-# Dangerous-pattern guard — same approach as ai_validator
+# Dangerous-pattern guard â€” same approach as ai_validator
 # ---------------------------------------------------------------------------
 _DANGEROUS_PATTERNS = re.compile(
     r"(ignore (previous|all) instructions?|"
@@ -50,10 +50,10 @@ _DANGEROUS_PATTERNS = re.compile(
 )
 
 # ---------------------------------------------------------------------------
-# System instructions — injected at the top of every prompt
+# System instructions â€” injected at the top of every prompt
 # ---------------------------------------------------------------------------
 _SYSTEM_INSTRUCTIONS = """\
-You are the AEGIS Security Assistant — an educational cybersecurity advisor \
+You are the AEGIS Security Assistant â€” an educational cybersecurity advisor \
 embedded in the AEGIS personal security dashboard.
 
 YOUR PURPOSE:
@@ -63,7 +63,7 @@ password strength) in plain language.
 - Give defensive, actionable recommendations.
 - Answer general cybersecurity questions clearly and calmly.
 
-STRICT RULES — YOU MUST ALWAYS FOLLOW THESE:
+STRICT RULES â€” YOU MUST ALWAYS FOLLOW THESE:
 1. Be educational and advisory. You are NOT an agent; you cannot execute \
 commands, access external systems, run code, or take actions on behalf of users.
 2. Do NOT fabricate scan results, threat-intelligence data, or specific facts \
@@ -79,12 +79,12 @@ exploiting vulnerabilities, or any illegal activity.
 7. If a question is outside cybersecurity, briefly acknowledge it and redirect \
 the conversation to security topics.
 8. Keep every response under 80 words. Be concise and direct.
-9. Never use em dashes (— or --) anywhere in your response. Use commas, \
+9. Never use em dashes (â€” or --) anywhere in your response. Use commas, \
 colons, or short sentences instead.
 """
 
 # ---------------------------------------------------------------------------
-# Fallback replies — specific to each failure mode
+# Fallback replies â€” specific to each failure mode
 # ---------------------------------------------------------------------------
 _FALLBACK: dict[str, tuple[str, str]] = {
     # (reply shown to user, error code for the response)
@@ -186,7 +186,7 @@ def _build_prompt(req: AssistantRequest) -> str:
     parts.append(f"USER QUESTION:\n{req.message}")
     parts.append(
         "Respond as the AEGIS Security Assistant following all rules above. "
-        "Plain text only — no markdown headers, no bullet symbols, no code blocks "
+        "Plain text only â€” no markdown headers, no bullet symbols, no code blocks "
         "unless the user explicitly asks for code. "
         "Maximum 80 words. No em dashes."
     )
@@ -248,7 +248,7 @@ def _infer_topic(text: str) -> str:
 def _parse_followups(raw: str) -> list[str]:
     """Extract clean follow-up questions from raw Gemini output."""
     lines = [
-        line.strip().lstrip("•-–—0123456789.) ").strip()
+        line.strip().lstrip("â€¢-â€“â€”0123456789.) ").strip()
         for line in raw.splitlines()
         if line.strip()
     ]
@@ -269,7 +269,7 @@ def _generate_followups(user_message: str, assistant_reply: str) -> list[str]:
     """
     Generate context-relevant follow-up suggestions from the curated topic pool.
 
-    We intentionally do NOT make a second Gemini API call here — doing so
+    We intentionally do NOT make a second Gemini API call here â€” doing so
     would double the rate-limit exposure per user turn and introduce a second
     failure point that could cascade into an api_error on the next main call.
     The curated pool is topic-inferred and already high-quality.
@@ -298,11 +298,15 @@ def _sanitise_reply(raw: str) -> str | None:
     if not cleaned:
         return None
     if _DANGEROUS_PATTERNS.search(cleaned):
-        logger.warning("Dangerous pattern in assistant reply — discarding")
+        logger.warning("Dangerous pattern in assistant reply â€” discarding")
         return None
-    # Remove em dashes (— U+2014, – U+2013) and double-hyphens used as em dashes
-    cleaned = re.sub(r"\s*[—–]\s*", " ", cleaned)
+    # Remove em dashes (â€” U+2014, â€“ U+2013) and double-hyphens used as em dashes
+    cleaned = re.sub(r"\s*[â€”â€“]\s*", " ", cleaned)
     cleaned = re.sub(r"\s*--\s*", " ", cleaned)
+    # Strip bullet/list symbols that Gemini may include despite instructions
+    cleaned = re.sub(r"[•·▪▸►◦‣⁃*]\s*", "", cleaned)
+    # Collapse multiple spaces created by removals
+    cleaned = re.sub(r" {2,}", " ", cleaned)
     cleaned = cleaned.strip()
     if len(cleaned) > _MAX_REPLY_LEN:
         # Truncate at the last sentence boundary within the limit
@@ -330,7 +334,7 @@ def chat(req: AssistantRequest) -> AssistantResponse:
     """
     Process one assistant turn.
 
-    Returns AssistantResponse with ai_available=False on any failure —
+    Returns AssistantResponse with ai_available=False on any failure â€”
     the caller should surface the error message to the user gracefully.
     The error field on the response contains a machine-readable error code.
     """
@@ -357,3 +361,4 @@ def chat(req: AssistantRequest) -> AssistantResponse:
         ai_available=True,
         follow_up_suggestions=follow_ups,
     )
+

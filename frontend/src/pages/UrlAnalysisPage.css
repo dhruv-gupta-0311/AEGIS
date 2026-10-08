@@ -231,7 +231,7 @@
   position: relative;
 }
 .url-recs li::before {
-  content: 'â€¢';
+  content: '\2022';
   position: absolute;
   left: 0;
   color: var(--info);

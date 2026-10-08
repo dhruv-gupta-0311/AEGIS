@@ -1,11 +1,11 @@
-"""URL analysis API route — POST /api/v1/analysis/url"""
+﻿"""URL analysis API route — POST /api/v1/analysis/url"""
 
 import json
 import time
 from collections import defaultdict
 from threading import Lock
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -22,11 +22,8 @@ from backend.app.services.url_analyzer import (
 
 router = APIRouter(prefix="/v1/analysis", tags=["analysis"])
 
-# ---------------------------------------------------------------------------
-# In-memory per-user token bucket rate limiter (30 requests / 60 s)
-# ---------------------------------------------------------------------------
 _RATE_LIMIT = 30
-_RATE_WINDOW = 60  # seconds
+_RATE_WINDOW = 60
 
 _rate_store: dict[int, list[float]] = defaultdict(list)
 _rate_lock = Lock()
@@ -57,14 +54,6 @@ def analyse_url_endpoint(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> UrlAnalysisResult:
-    """
-    Deterministic risk analysis of a URL.
-
-    - No external threat-intelligence APIs are called.
-    - HTTPS is noted but is NOT used as a safety signal.
-    - Query values are redacted before storage.
-    - Returns HTTP 422 for malformed / hostless URLs.
-    """
     _check_rate_limit(current_user.id)
 
     try:
@@ -75,15 +64,21 @@ def analyse_url_endpoint(
             detail=str(exc),
         ) from exc
 
-    # Safe storage: query values redacted, userinfo/fragment dropped
     safe_target = redact_url_for_storage(payload.url)[:2048]
 
-    # Summary: list of indicator ids/names; truncate list not string
+    # Legacy summary: list of indicator ids (kept for backwards compat)
     summary_items = [i.id or i.name for i in indicators]
     summary = json.dumps(summary_items)
     while len(summary) > 500 and summary_items:
         summary_items.pop()
         summary = json.dumps(summary_items)
+
+    # Full indicator objects stored as JSON
+    indicators_json = json.dumps([
+        {"id": i.id, "name": i.name, "detail": i.detail, "severity": i.severity, "weight": i.weight}
+        for i in indicators
+    ])
+    recommendations_json = json.dumps(recommendations)
 
     scan = Scan(
         user_id=current_user.id,
@@ -92,6 +87,8 @@ def analyse_url_endpoint(
         risk_level=RiskLevel(level),
         risk_score=score,
         summary=summary,
+        indicators=indicators_json,
+        recommendations=recommendations_json,
     )
     try:
         db.add(scan)

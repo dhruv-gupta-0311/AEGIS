@@ -147,11 +147,32 @@
 .sh-risk--warning { color: var(--warning); }
 .sh-risk--danger  { color: var(--danger); }
 
-.sh-score { color: var(--text-primary); font-weight: 600; }
-.sh-target { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sh-score  { color: var(--text-primary); font-weight: 600; }
+.sh-target { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sh-date   { white-space: nowrap; font-size: 12px; color: var(--text-muted); }
 
-/* Delete */
+/* Action cell buttons */
+.sh-actions-cell {
+  white-space: nowrap;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.sh-download-btn {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.15s, border-color 0.15s;
+}
+.sh-download-btn:hover { opacity: 1; border-color: var(--accent); }
+
 .sh-delete-btn {
   font-size: 11px;
   font-weight: 600;
@@ -174,9 +195,9 @@
   padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
-.sh-detail-section { display: flex; flex-direction: column; gap: 4px; }
+.sh-detail-section { display: flex; flex-direction: column; gap: 6px; }
 .sh-detail-label {
   font-size: 10px;
   font-weight: 600;
@@ -191,6 +212,67 @@
   word-break: break-all;
 }
 .sh-detail-value--muted { font-family: inherit; font-style: italic; }
+
+/* Full indicator cards */
+.sh-indicator-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sh-indicator-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sh-indicator-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sh-indicator-sev {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.sh-indicator-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sh-indicator-detail {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Recommendations list */
+.sh-rec-list {
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sh-rec-list li {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Legacy chip (kept for old scans without full indicator data) */
 .sh-indicator-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 .sh-indicator-chip {
   font-size: 11px;
@@ -254,5 +336,5 @@
   .sh-row td:last-child  { padding-bottom: 12px; }
   .sh-target { max-width: 100%; white-space: normal; }
   .sh-date   { white-space: normal; }
+  .sh-actions-cell { flex-wrap: wrap; }
 }
-

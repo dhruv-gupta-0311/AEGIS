@@ -83,11 +83,7 @@
 }
 
 /* Skeleton */
-.rp-skeleton-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
+.rp-skeleton-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .rp-skeleton-card {
   height: 100px;
   background: var(--bg-surface);
@@ -110,38 +106,16 @@
 }
 
 /* Metric cards */
-.rp-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
+.rp-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 
 /* Charts */
-.rp-charts {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
+.rp-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-/* Bar rows */
-.rp-bars {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+.rp-bars { display: flex; flex-direction: column; gap: 10px; }
 
-.rp-bar-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.rp-bar-row { display: flex; align-items: center; gap: 10px; }
 
-.rp-bar-label {
-  width: 64px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  flex-shrink: 0;
-}
+.rp-bar-label { width: 64px; font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
 
 .rp-bar-track {
   flex: 1;
@@ -158,13 +132,86 @@
   min-width: 2px;
 }
 
-.rp-bar-count {
-  width: 28px;
-  text-align: right;
+.rp-bar-count { width: 28px; text-align: right; font-size: 12px; font-weight: 600; color: var(--text-primary); }
+
+/* Individual scan list */
+.rp-section-title {
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
 }
+
+.rp-scan-table-wrap {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.rp-scan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.rp-scan-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.rp-scan-row { border-bottom: 1px solid var(--border); transition: background 0.12s; }
+.rp-scan-row:last-child { border-bottom: none; }
+.rp-scan-row:hover { background: var(--bg-elevated); }
+.rp-scan-row td { padding: 10px 14px; color: var(--text-secondary); vertical-align: middle; }
+
+.rp-type-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+.rp-type-badge--url      { color: var(--info);    border-color: var(--info);    background: #58a6ff11; }
+.rp-type-badge--phishing { color: var(--warning); border-color: var(--warning); background: #d2992211; }
+.rp-type-badge--password { color: var(--accent);  border-color: var(--accent);  background: #00d4aa11; }
+
+.rp-risk { font-weight: 600; font-size: 12px; }
+.rp-risk--success { color: var(--success); }
+.rp-risk--info    { color: var(--info); }
+.rp-risk--warning { color: var(--warning); }
+.rp-risk--danger  { color: var(--danger); }
+
+.rp-score  { color: var(--text-primary); font-weight: 600; }
+.rp-target { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-date   { white-space: nowrap; font-size: 12px; color: var(--text-muted); }
+
+.rp-dl-btn {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 3px 10px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.rp-dl-btn:hover { opacity: 1; border-color: var(--accent); }
 
 /* Responsive */
 @media (max-width: 900px) {
@@ -176,7 +223,5 @@
   .rp-metrics { grid-template-columns: 1fr; }
   .rp-header  { flex-direction: column; }
   .rp-header-actions { width: 100%; }
-  .rp-refresh-btn,
-  .rp-download-btn { width: 100%; text-align: center; }
+  .rp-refresh-btn, .rp-download-btn { width: 100%; text-align: center; }
 }
-
