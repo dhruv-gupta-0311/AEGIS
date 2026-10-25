@@ -248,7 +248,7 @@ def _infer_topic(text: str) -> str:
 def _parse_followups(raw: str) -> list[str]:
     """Extract clean follow-up questions from raw Gemini output."""
     lines = [
-        line.strip().lstrip("â€¢-â€“â€”0123456789.) ").strip()
+        line.strip().lstrip("•–—-0123456789.) ").strip()
         for line in raw.splitlines()
         if line.strip()
     ]
@@ -301,7 +301,7 @@ def _sanitise_reply(raw: str) -> str | None:
         logger.warning("Dangerous pattern in assistant reply â€” discarding")
         return None
     # Remove em dashes (â€” U+2014, â€“ U+2013) and double-hyphens used as em dashes
-    cleaned = re.sub(r"\s*[â€”â€“]\s*", " ", cleaned)
+    cleaned = re.sub(r"\s*[—–]\s*", " ", cleaned)
     cleaned = re.sub(r"\s*--\s*", " ", cleaned)
     # Strip bullet/list symbols that Gemini may include despite instructions
     cleaned = re.sub(r"[•·▪▸►◦‣⁃*]\s*", "", cleaned)
