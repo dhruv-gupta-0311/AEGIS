@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: aegis-mysql-data
+  namespace: aegis
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aegis-mysql
+  namespace: aegis
+  labels:
+    app: aegis-mysql
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate          # one pod owns the volume; never run two MySQLs on it
+  selector:
+    matchLabels:
+      app: aegis-mysql
+  template:
+    metadata:
+      labels:
+        app: aegis-mysql
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: aegis-secrets, key: MYSQL_ROOT_PASSWORD }
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef: { name: aegis-secrets, key: MYSQL_DATABASE }
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef: { name: aegis-secrets, key: MYSQL_USER }
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: aegis-secrets, key: MYSQL_PASSWORD }
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$MYSQL_ROOT_PASSWORD\""]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 12
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: aegis-mysql-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aegis-mysql
+  namespace: aegis
+spec:
+  type: ClusterIP
+  selector:
+    app: aegis-mysql
+  ports:
+    - port: 3306
+      targetPort: 3306
