@@ -42,7 +42,7 @@ export default function LoginPage() {
         </div>
 
         <h1 className="auth-title">Sign in</h1>
-        <p className="auth-subtitle">Welcome back. Enter your credentials to continue.</p>
+        <p className="auth-subtitle">Welcome back (v2). Enter your credentials to continue.</p>
 
         {error && <div className="auth-error" role="alert">{error}</div>}
 
